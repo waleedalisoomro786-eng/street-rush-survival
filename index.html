@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Street Rush Survival</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:Arial,sans-serif;
+  background:linear-gradient(135deg,#0f172a,#1e293b);
+  color:#fff;
+  padding:14px;
+}
+.app{max-width:520px;margin:auto}
+header{text-align:center;padding:18px 8px}
+h1{margin:0;font-size:30px}
+header p{margin:7px 0;color:#cbd5e1}
+.screen{display:none}
+.screen.active{display:block}
+.card{
+  background:#fff;
+  color:#111827;
+  border-radius:22px;
+  padding:18px;
+  margin-bottom:14px;
+  box-shadow:0 12px 35px #0005;
+}
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.game{
+  border:0;
+  border-radius:18px;
+  padding:15px 8px;
+  min-height:125px;
+  background:#f1f5f9;
+  color:#111827;
+  font-weight:bold;
+  font-size:16px;
+}
+.game:active{transform:scale(.97)}
+.game b{display:block;font-size:38px;margin-bottom:8px}
+.game small{
+  display:block;
+  color:#64748b;
+  margin-top:6px;
+  font-weight:normal;
+}
+.top{display:flex;justify-content:space-between}
+button{font-family:inherit}
+.back,.btn,.key{
+  border:0;
+  border-radius:12px;
+  padding:11px 17px;
+  font-weight:bold;
+}
+.back,.key{background:#e2e8f0;color:#111827}
+.btn{background:#111827;color:#fff;margin:4px}
+.blue{background:#2563eb}
+h2{text-align:center;margin:8px}
+.sub{text-align:center;color:#64748b}
+.stats{
+  display:flex;
+  justify-content:space-around;
+  text-align:center;
+  margin:16px 0;
+}
+.stats b{display:block;font-size:28px}
+.stats small{color:#64748b}
+.timer{
+  text-align:center;
+  font-weight:bold;
+  font-size:20px;
+  margin:12px;
+}
+.message{
+  text-align:center;
+  min-height:28px;
+  margin:12px 0;
+  font-weight:bold;
+}
+.tap{
+  display:block;
+  width:220px;
+  height:220px;
+  border:0;
+  border-radius:50%;
+  background:#111827;
+  color:#fff;
+  font-size:32px;
+  font-weight:bold;
+  margin:20px auto;
+}
+.tap:active{transform:scale(.94)}
+.area{
+  height:300px;
+  background:#e2e8f0;
+  border-radius:18px;
+  position:relative;
+  margin:15px 0;
+}
+.target{
+  position:absolute;
+  width:60px;
+  height:60px;
+  border:0;
+  border-radius:50%;
+  background:#ef4444;
+  display:none;
+}
+.memory{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+  margin:15px 0;
+}
+.mem{
+  aspect-ratio:1;
+  border:0;
+  border-radius:12px;
+  background:#111827;
+  color:#fff;
+  font-size:25px;
+}
+.mem.open{background:#e2e8f0;color:#111827}
+.number{
+  text-align:center;
+  font-size:38px;
+  font-weight:bold;
+  margin:18px;
+  min-height:48px;
+}
+.keys{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  max-width:330px;
+  margin:auto;
+}
+.key{font-size:21px;padding:16px}
+.colorbox{
+  width:160px;
+  height:160px;
+  border-radius:22px;
+  margin:20px auto;
+}
+.colors{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+}
+.choice{
+  height:60px;
+  border:0;
+  border-radius:13px;
+  color:#fff;
+  font-weight:bold;
+}
+.ttt{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  max-width:330px;
+  margin:20px auto;
+}
+.cell{
+  aspect-ratio:1;
+  border:0;
+  border-radius:13px;
+  background:#e2e8f0;
+  color:#111827;
+  font-size:40px;
+  font-weight:bold;
+}
+.profile{
+  text-align:center;
+  padding:8px;
+  color:#cbd5e1;
+}
+.profile strong{color:#fff}
+footer{
+  text-align:center;
+  color:#94a3b8;
+  font-size:12px;
+  padding:15px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+<h1>🏃 Street Rush: Survival</h1>
+<p>🎮 Play · Score · Challenge · Survive</p>
+</header>
+
+<section id="home" class="screen active">
+<div class="card">
+<h2>Choose Your Mission</h2>
+
+<div class="grid">
+
+<button class="game" onclick="openGame('tap')">
+<b>⚡</b>
+Tap Rush
+<small>Tap as fast as you can</small>
+</button>
+
+<button class="game" onclick="openGame('target')">
+<b>🎯</b>
+Target Hunter
+<small>Hit every target</small>
+</button>
+
+<button class="game" onclick="openGame('memory')">
+<b>🧠</b>
+Memory Mission
+<small>Find all pairs</small>
+</button>
+
+<button class="game" onclick="openGame('number')">
+<b>🔢</b>
+Number Rush
+<small>Type the number</small>
+</button>
+
+<button class="game" onclick="openGame('color')">
+<b>🎨</b>
+Color Hunter
+<small>Choose correctly</small>
+</button>
+
+<button class="game" onclick="openGame('ttt')">
+<b>❌</b>
+Tic-Tac-Toe
+<small>Beat the computer</small>
+</button>
+
+</div>
+</div>
+
+<div class="profile">
+Player: <strong>Waleed</strong><br>
+🏆 Complete missions and improve your best scores.
+</div>
+</section>
+
+
+<!-- TAP RUSH -->
+<section id="tap" class="screen">
+<div class="card">
+<div class="top">
+<button class="back" onclick="home()">← Games</button>
+</div>
+
+<h2>⚡ Tap Rush</h2>
+<div class="sub">Tap as fast as you can!</div>
+
+<div class="stats">
+<div><small>Score</small><b id="tapScore">0</b></div>
+<div><small>Best</small><b id="tapBest">0</b></div>
+</div>
+
+<div class="timer" id="tapTimer">Time: 10s</div>
+
+<button class="tap" id="tapButton" disabled>TAP!</button>
+
+<div style="text-align:center">
+<button class="btn" id="tapStartButton" onclick="startTap()">START GAME</button>
+<button class="btn blue" id="tapAgainButton" style="display:none" onclick="startTap()">PLAY AGAIN</button>
+</div>
+
+<div class="message" id="tapMessage"></div>
+</div>
+</section>
+
+
+<!-- TARGET -->
+<section id="target" class="screen">
+<div class="card">
+<div class="top">
+<button class="back" onclick="home()">← Games</button>
+</div>
+
+<h2>🎯 Target Hunter</h2>
+<div class="sub">Hit as many targets as possible!</div>
+
+<div class="stats">
+<div><small>Score</small><b id="targetScore">0</b></div>
+<div><small>Best</small><b id="targetBest">0</b></div>
+</div>
+
+<div class="timer" id="targetTimer">Time: 15s</div>
+
+<div class="area" id="targetArea">
+<button class="target" id="targetButton"></button>
+</div>
+
+<div style="text-align:center">
+<button class="btn" id="targetStartButton" onclick="startTarget()">START GAME</button>
+<button class="btn blue" id="targetAgainButton" style="display:none" onclick="startTarget()">PLAY AGAIN</button>
+</div>
+
+<div class="message" id="targetMessage"></div>
+</div>
+</section>
+
+
+<!-- MEMORY -->
+<section id="memory" class="screen">
+<div class="card">
+
+<div class="top">
+<button class="back" onclick="home()">← Games</button>
+</div>
+
+<h2>🧠 Memory Mission</h2>
+<div class="sub">Match all the pairs!</div>
+
+<div class="stats">
+<div><small>Moves</small><b id="memoryMoves">0</b></div>
+<div><small>Best</small><b id="memoryBest">-</b></div>
+</div>
+
+<div class="memory" id="memoryGrid"></div>
+
+<div style="text-align:center">
+<button class="btn blue" onclick="startMemory()">NEW GAME</button>
+</div>
+
+<div class="message" id="memoryMessage"></div>
+</div>
+</section>
+
+
+<!-- NUMBER -->
+<section id="number" class="screen">
+<div class="card">
+
+<div class="top">
+<button class="back" onclick="home()">← Games</button>
+</div>
+
+<h2>🔢 Number Rush</h2>
+<div class="sub">Type the shown number!</div>
+
+<div class="stats">
+<div><small>Score</small><b id="numberScore">0</b></div>
+<div><small>Best</small><b id="numberBest">0</b></div>
+</div>
+
+<div class="timer" id="numberTimer">Time: 20s</div>
+
+<div class="number" id="numberDisplay">---</div>
+
+<div class="keys">
+<button class="key" onclick="numberKey('1')">1</button>
+<button class="key" onclick="numberKey('2')">2</button>
+<button class="key" onclick="numberKey('3')">3</button>
+<button class="key" onclick="numberKey('4')">4</button>
+<button class="key" onclick="numberKey('5')">5</button>
+<button class="key" onclick="numberKey('6')">6</button>
+<button class="key" onclick="numberKey('7')">7</button>
+<button class="key" onclick="numberKey('8')">8</button>
+<button class="key" onclick="numberKey('9')">9</button>
+<button class="key" onclick="numberKey('c')">C</button>
+<button class="key" onclick="numberKey('0')">0</button>
+<button class="key" onclick="numberKey('b')">⌫</button>
+</div>
+
+<div style="text-align:center;margin-top:12px">
+<button class="btn" id="numberStartButton" onclick="startNumber()">START GAME</button>
+<button class="btn blue" id="numberAgainButton" style="display:none" onclick="startNumber()">PLAY AGAIN</button>
+</div>
+
+<div class="message" id="numberMessage"></div>
+</div>
+</section>
+
+
+<!-- COLOR -->
+<section id="color" class="screen">
+<div class="card">
+
+<div class="top">
+<button class="back" onclick="home()">← Games</button>
+</div>
+
+<h2>🎨 Color Hunter</h2>
+<div class="sub">Choose the correct color!</div>
+
+<div class="stats">
+<div><small>Score</small><b id="colorScore">0</b></div>
+<div><small>Best</small><b id="colorBest">0</b></div>
+</div>
+
+<div class="timer" id="colorTimer">Time: 15s</div>
+
+<div class="colorbox" id="colorBox"></div>
+<div class="colors" id="colorOptions"></div>
+
+<div style="text-align:center">
+<button class="btn" id="colorStartButton" onclick="startColor()">START GAME</button>
+<button class="btn blue" id="colorAgainButton" style="display:none" onclick="startColor()">PLAY AGAIN</button>
+</div>
+
+<div class="message" id="colorMessage"></div>
+</div>
+</section>
+
+
+<!-- TIC TAC TOE -->
+<section id="ttt" class="screen">
+<div class="card">
+
+<div class="top">
+<button class="back" onclick="home()">← Games</button>
+</div>
+
+<h2>❌⭕ Tic-Tac-Toe</h2>
+<div class="sub">You are X · Computer is O</div>
+
+<div class="ttt" id="tttBoard"></div>
+
+<div style="text-align:center">
+<button class="btn blue" onclick="startTTT()">NEW GAME</button>
+</div>
+
+<div class="message" id="tttMessage"></div>
+</div>
+</section>
+
+
+<footer>
+Made with care · Street Rush: Survival
+</footer>
+
+</div>
+
+
+<script>
+/* ---------- COMMON ---------- */
+
+let timers=[];
+
+function clearTimers(){
+timers.forEach(t=>clearInterval(t));
+timers=[];
+}
+
+function timer(fn,ms){
+let t=setInterval(fn,ms);
+timers.push(t);
+return t;
+}
+
+function home(){
+clearTimers();
+document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+document.getElementById('home').classList.add('active');
+}
+
+function openGame(id){
+clearTimers();
+document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+
+if(id==='memory')startMemory();
+if(id==='ttt')startTTT();
+
+sound(500,.08);
+}
+
+function best(key,score){
+let old=Number(localStorage.getItem(key)||0);
+if(score>old){
+localStorage.setItem(key,score);
+return score;
+}
+return old;
+}
+
+
+/* ---------- SOUND ---------- */
+
+let audio=null;
+
+function sound(freq=600,duration=.1){
+try{
+audio=audio||new (window.AudioContext||window.webkitAudioContext)();
+let osc=audio.createOscillator();
+let gain=audio.createGain();
+
+osc.frequency.value=freq;
+osc.type='sine';
+
+gain.gain.setValueAtTime(.08,audio.currentTime);
+gain.gain.exponentialRampToValueAtTime(.001,audio.currentTime+duration);
+
+osc.connect(gain);
+gain.connect(audio.destination);
+
+osc.start();
+osc.stop(audio.currentTime+duration);
+}catch(e){}
+}
+
+
+/* ---------- TAP RUSH ---------- */
+
+let tapScore=0;
+let tapTime=10;
+let tapRunning=false;
+
+const tapButton=document.getElementById('tapButton');
+
+function startTap(){
+clearTimers();
+
+tapScore=0;
+tapTime=10;
+tapRunning=true;
+
+tapScoreEl().textContent=0;
+document.getElementById('tapTimer').textContent='Time: 10s';
+document.getElementById('tapMessage').textContent='GO!';
+
+tapButton.disabled=false;
+
+document.getElementById('tapStartButton').style.display='none';
+document.getElementById('tapAgainButton').style.display='none';
+
+sound(700,.15);
+
+timer(()=>{
+tapTime--;
+document.getElementById('tapTimer').textContent='Time: '+tapTime+'s';
+
+if(tapTime<=0){
+clearTimers();
+tapRunning=false;
+tapButton.disabled=true;
+
+let old=Number(localStorage.getItem('tapBest')||0);
+let b=best('tapBest',tapScore);
+
+document.getElementById('tapBest').textContent=b;
+
+document.getElementById('tapMessage').textContent=
+tapScore>old
+?'🎉 New Best Score: '+tapScore+'!'
+:'⏱️ Time up! Score: '+tapScore;
+
+document.getElementById('tapStartButton').style.display='inline-block';
+document.getElementById('tapAgainButton').style.display='inline-block';
+
+sound(300,.25);
+}
+},1000);
+}
+
+function tapScoreEl(){
+return document.getElementById('tapScore');
+}
+
+tapButton.onclick=function(){
+if(!tapRunning)return;
+tapScore++;
+tapScoreEl().textContent=tapScore;
+sound(650,.04);
+};
+
+document.getElementById('tapBest').textContent=
+localStorage.getItem('tapBest')||0;
+
+
+/* ---------- TARGET ---------- */
+
+let targetScore=0;
+let targetTime=15;
+let targetRunning=false;
+
+const targetArea=document.getElementById('targetArea');
+const targetButton=document.getElementById('targetButton');
+
+function moveTarget(){
+let maxX=targetArea.clientWidth-60;
+let maxY=targetArea.clientHeight-60;
+
+targetButton.style.left=Math.max(0,Math.random()*maxX)+'px';
+targetButton.style.top=Math.max(0,Math.random()*maxY)+'px';
+targetButton.style.display='block';
+}
+
+targetButton.onclick=function(){
+if(!targetRunning)return;
+
+targetScore++;
+document.getElementById('targetScore').textContent=targetScore;
+
+sound(800,.06);
+moveTarget();
+};
+
+function startTarget(){
+clearTimers();
+
+targetScore=0;
+targetTime=15;
+targetRunning=true;
+
+document.getElementById('targetScore').textContent=0;
+document.getElementById('targetTimer').textContent='Time: 15s';
+document.getElementById('targetMessage').textContent='GO!';
+
+document.getElementById('targetStartButton').style.display='none';
+document.getElementById('targetAgainButton').style.display='none';
+
+moveTarget();
+sound(700,.12);
+
+timer(()=>{
+targetTime--;
+document.getElementById('targetTimer').textContent='Time: '+targetTime+'s';
+
+if(targetTime<=0){
+clearTimers();
+targetRunning=false;
+targetButton.style.display='none';
+
+let b=best('targetBest',targetScore);
+
+document.getElementById('targetBest').textContent=b;
+document.getElementById('targetMessage').textContent=
+'⏱️ Time up! Score: '+targetScore;
+
+document.getElementById('targetStartButton').style.display='inline-block';
+document.getElementById('targetAgainButton').style.display='inline-block';
+
+sound(300,.25);
+}
+},1000);
+}
+
+document.getElementById('targetBest').textContent=
+localStorage.getItem('targetBest')||0;
+
+
+/* ---------- MEMORY ---------- */
+
+let firstCard=null;
+let memoryLock=false;
+let memoryMoves=0;
+let memoryMatches=0;
+
+function startMemory(){
+let symbols=[
+'🍎','🍎','🚀','🚀','⭐','⭐','🎮','🎮',
+'🔥','🔥','🎯','🎯','💎','💎','⚡','⚡'
+];
+
+symbols.sort(()=>Math.random()-.5);
+
+firstCard=null;
+memoryLock=false;
+memoryMoves=0;
+memoryMatches=0;
+
+document.getElementById('memoryMoves').textContent=0;
+document.getElementById('memoryMessage').textContent='';
+
+let grid=document.getElementById('memoryGrid');
+grid.innerHTML='';
+
+symbols.forEach(symbol=>{
+let b=document.createElement('button');
+
+b.className='mem';
+b.textContent='?';
+b.dataset.symbol=symbol;
+
+b.onclick=()=>flipCard(b);
+
+grid.appendChild(b);
+});
+}
+
+function flipCard(card){
+if(memoryLock||card.classList.contains('open'))return;
+
+card.classList.add('open');
+card.textContent=card.dataset.symbol;
+sound(550,.05);
+
+if(!firstCard){
+firstCard=card;
+return;
+}
+
+memoryMoves++;
+document.getElementById('memoryMoves').textContent=memoryMoves;
+
+if(firstCard.dataset.symbol===card.dataset.symbol){
+
+memoryMatches++;
+firstCard=null;
+sound(850,.12);
+
+if(memoryMatches===8){
+
+let old=Number(localStorage.getItem('memoryBest')||999);
+
+if(memoryMoves<old){
+localStorage.setItem('memoryBest',memoryMoves);
+}
+
+document.getElementById('memoryBest').textContent=
+Math.min(memoryMoves,old);
+
+document.getElementById('memoryMessage').textContent=
+'🎉 Mission complete! All pairs matched!';
+
+sound(1000,.3);
+}
+}else{
+
+let oldCard=firstCard;
+memoryLock=true;
+
+setTimeout(()=>{
+oldCard.classList.remove('open');
+card.classList.remove('open');
+
+oldCard.textContent='?';
+card.textContent='?';
+
+firstCard=null;
+memoryLock=false;
+},650);
+}
+}
+
+document.getElementById('memoryBest').textContent=
+localStorage.getItem('memoryBest')||'-';
+
+
+/* ---------- NUMBER RUSH ---------- */
+
+let numberScore=0;
+let numberTime=20;
+let numberTarget='';
+let numberInput='';
+let numberRunning=false;
+
+function newNumber(){
+let length=3+Math.floor(numberScore/3);
+
+numberTarget='';
+
+for(let i=0;i<length;i++){
+numberTarget+=Math.floor(Math.random()*10);
+}
+
+numberInput='';
+document.getElementById('numberDisplay').textContent=numberTarget;
+}
+
+function startNumber(){
+clearTimers();
+
+numberScore=0;
+numberTime=20;
+numberRunning=true;
+numberInput='';
+
+document.getElementById('numberScore').textContent=0;
+document.getElementById('numberTimer').textContent='Time: 20s';
+document.getElementById('numberMessage').textContent='GO!';
+
+document.getElementById('numberStartButton').style.display='none';
+document.getElementById('numberAgainButton').style.display='none';
+
+newNumber();
+sound(700,.12);
+
+timer(()=>{
+numberTime--;
+
+document.getElementById('numberTimer').textContent=
+'Time: '+numberTime+'s';
+
+if(numberTime<=0){
+clearTimers();
+numberRunning=false;
+
+let b=best('numberBest',numberScore);
+
+document.getElementById('numberBest').textContent=b;
+document.getElementById('numberMessage').textContent=
+'⏱️ Time up! Score: '+numberScore;
+
+document.getElementById('numberStartButton').style.display='inline-block';
+document.getElementById('numberAgainButton').style.display='inline-block';
+
+sound(300,.25);
+}
+},1000);
+}
+
+function numberKey(k){
+if(!numberRunning)return;
+
+if(k==='c'){
+numberInput='';
+}
+else if(k==='b'){
+numberInput=numberInput.slice(0,-1);
+}
+else{
+numberInput+=k;
+}
+
+if(numberInput===numberTarget){
+
+numberScore++;
+document.getElementById('numberScore').textContent=numberScore;
+
+sound(850,.08);
+newNumber();
+
+}
+else if(numberInput.length>=numberTarget.length){
+
+numberInput='';
+sound(250,.08);
+}
+}
+
+document.getElementById('numberBest').textContent=
+localStorage.getItem('numberBest')||0;
+
+
+/* ---------- COLOR ---------- */
+
+const colorList=[
+['RED','#ef4444'],
+['BLUE','#3b82f6'],
+['GREEN','#22c55e'],
+['YELLOW','#eab308'],
+['PURPLE','#a855f7'],
+['ORANGE','#f97316']
+];
+
+let colorAnswer=null;
+let colorScore=0;
+let colorTime=15;
+let colorRunning=false;
+
+function newColor(){
+colorAnswer=colorList[
+Math.floor(Math.random()*colorList.length)
+];
+
+document.getElementById('colorBox').style.background=
+colorAnswer[1];
+
+let options=[colorAnswer];
+
+while(options.length<4){
+
+let c=colorList[
+Math.floor(Math.random()*colorList.length)
+];
+
+if(!options.includes(c))options.push(c);
+}
+
+options.sort(()=>Math.random()-.5);
+
+let box=document.getElementById('colorOptions');
+box.innerHTML='';
+
+options.forEach(c=>{
+
+let b=document.createElement('button');
+
+b.className='choice';
+b.textContent=c[0];
+b.style.background=c[1];
+
+b.onclick=function(){
+
+if(!colorRunning)return;
+
+if(c===colorAnswer){
+
+colorScore++;
+document.getElementById('colorScore').textContent=colorScore;
+
+sound(800,.07);
+newColor();
+
+}else{
+
+sound(250,.07);
+}
+};
+
+box.appendChild(b);
+});
+}
+
+function startColor(){
+clearTimers();
+
+colorScore=0;
+colorTime=15;
+colorRunning=true;
+
+document.getElementById('colorScore').textContent=0;
+document.getElementById('colorTimer').textContent='Time: 15s';
+document.getElementById('colorMessage').textContent='GO!';
+
+document.getElementById('colorStartButton').style.display='none';
+document.getElementById('colorAgainButton').style.display='none';
+
+newColor();
+sound(700,.12);
+
+timer(()=>{
+colorTime--;
+
+document.getElementById('colorTimer').textContent=
+'Time: '+colorTime+'s';
+
+if(colorTime<=0){
+
+clearTimers();
+colorRunning=false;
+
+let b=best('colorBest',colorScore);
+
+document.getElementById('colorBest').textContent=b;
+
+document.getElementById('colorMessage').textContent=
+'⏱️ Time up! Score: '+colorScore;
+
+document.getElementById('colorStartButton').style.display='inline-block';
+document.getElementById('colorAgainButton').style.display='inline-block';
+
+sound(300,.25);
+}
+},1000);
+}
+
+document.getElementById('colorBest').textContent=
+localStorage.getItem('colorBest')||0;
+
+
+/* ---------- TIC TAC TOE ---------- */
+
+let boardState=[];
+let gameOver=false;
+let computerThinking=false;
+
+function startTTT(){
+
+clearTimers();
+
+boardState=['','','','','','','','',''];
+gameOver=false;
+computerThinking=false;
+
+document.getElementById('tttMessage').textContent='Your turn!';
+
+drawTTT();
+sound(550,.1);
+}
+
+functi
