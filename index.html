@@ -964,8 +964,7 @@ sound(300,.25);
 document.getElementById('colorBest').textContent=
 localStorage.getItem('colorBest')||0;
 
-
-/* ---------- TIC TAC TOE ---------- */
+/* --------- TIC TAC TOE --------- */
 
 let boardState=[];
 let gameOver=false;
@@ -985,4 +984,152 @@ drawTTT();
 sound(550,.1);
 }
 
-functi
+function drawTTT(){
+
+let board=document.getElementById('tttBoard');
+board.innerHTML='';
+
+boardState.forEach((value,index)=>{
+
+let cell=document.createElement('button');
+
+cell.className='cell';
+cell.textContent=value;
+
+cell.onclick=function(){
+playerMove(index);
+};
+
+board.appendChild(cell);
+
+});
+}
+
+function checkWinner(){
+
+const wins=[
+[0,1,2],
+[3,4,5],
+[6,7,8],
+[0,3,6],
+[1,4,7],
+[2,5,8],
+[0,4,8],
+[2,4,6]
+];
+
+for(let w of wins){
+
+let a=boardState[w[0]];
+let b=boardState[w[1]];
+let c=boardState[w[2]];
+
+if(a && a===b && b===c){
+return a;
+}
+
+}
+
+if(boardState.every(x=>x)){
+return 'draw';
+}
+
+return null;
+}
+
+function playerMove(index){
+
+if(gameOver || computerThinking || boardState[index]){
+return;
+}
+
+boardState[index]='X';
+
+drawTTT();
+
+let result=checkWinner();
+
+if(result){
+finishTTT(result);
+return;
+}
+
+computerThinking=true;
+
+document.getElementById('tttMessage').textContent=
+'Computer is thinking...';
+
+setTimeout(computerMove,400);
+}
+
+function computerMove(){
+
+if(gameOver)return;
+
+let empty=[];
+
+boardState.forEach((v,i)=>{
+if(!v)empty.push(i);
+});
+
+if(empty.length===0){
+computerThinking=false;
+return;
+}
+
+let index=empty[Math.floor(Math.random()*empty.length)];
+
+boardState[index]='O';
+
+computerThinking=false;
+
+drawTTT();
+
+let result=checkWinner();
+
+if(result){
+finishTTT(result);
+}else{
+document.getElementById('tttMessage').textContent=
+'Your turn!';
+}
+
+sound(650,.08);
+}
+
+function finishTTT(result){
+
+gameOver=true;
+computerThinking=false;
+
+if(result==='X'){
+
+document.getElementById('tttMessage').textContent=
+'🎉 You win!';
+
+sound(1000,.25);
+
+}
+else if(result==='O'){
+
+document.getElementById('tttMessage').textContent=
+'🤖 Computer wins!';
+
+sound(300,.25);
+
+}
+else{
+
+document.getElementById('tttMessage').textContent=
+'🤝 Draw!';
+
+sound(500,.15);
+
+}
+}
+
+drawTTT();
+
+</script>
+</body>
+</html>
